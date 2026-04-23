@@ -32,12 +32,25 @@ document.querySelectorAll(
   observer.observe(el);
 });
 
-// Contact form stub
-document.getElementById('contact-form').addEventListener('submit', e => {
+// Contact form
+document.getElementById('contact-form').addEventListener('submit', async e => {
   e.preventDefault();
   const btn = e.target.querySelector('button[type="submit"]');
-  btn.textContent = 'Message sent!';
+  btn.textContent = 'Sending…';
   btn.disabled = true;
-  btn.style.background = '#00a382';
-  // Wire up to your backend / Formspree / etc. here
+
+  const res = await fetch('https://formspree.io/f/xojyyebn', {
+    method: 'POST',
+    headers: { 'Accept': 'application/json' },
+    body: new FormData(e.target),
+  });
+
+  if (res.ok) {
+    btn.textContent = 'Message sent!';
+    btn.style.background = '#00a382';
+    e.target.reset();
+  } else {
+    btn.textContent = 'Something went wrong — try again';
+    btn.disabled = false;
+  }
 });
